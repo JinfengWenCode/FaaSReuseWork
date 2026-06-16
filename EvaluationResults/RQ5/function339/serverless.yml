@@ -1,0 +1,41 @@
+```yaml
+service: azure-servicebus-function
+
+provider:
+  name: azure
+  runtime: nodejs14.x
+  region: West Europe  # Specify your Azure region
+
+plugins:
+  - serverless-azure-functions
+
+functions:
+  serviceBusQueueTrigger:
+    handler: handler.serviceBusQueueTrigger
+    events:
+      - serviceBus:
+          name: my-service-bus-queue
+          queueName: my-queue
+          connection: SERVICE_BUS_CONNECTION_STRING
+
+resources:
+  extensions:
+    - name: Microsoft.ServiceBus/namespaces
+      type: Microsoft.ServiceBus/namespaces
+      apiVersion: 2017-04-01
+      location: West Europe
+      properties:
+        sku:
+          name: Standard
+        isAutoInflateEnabled: true
+        maximumThroughputUnits: 1
+      resources:
+        - name: my-queue
+          type: queues
+          apiVersion: 2017-04-01
+          properties:
+            enablePartitioning: true
+
+app:
+  name: my-azure-function-app
+```

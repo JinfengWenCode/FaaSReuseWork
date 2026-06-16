@@ -1,0 +1,34 @@
+```yaml
+service: graphql-dynamodb-service
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  environment:
+    DYNAMODB_TABLE: GreetingsTable
+
+functions:
+  graphql:
+    handler: handler.graphqlHandler
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    GreetingsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

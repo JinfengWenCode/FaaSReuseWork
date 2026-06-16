@@ -1,0 +1,32 @@
+```yaml
+service: cron-job-service
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+
+functions:
+  cronJobFunction:
+    handler: handler.cronJobHandler
+    events:
+      - schedule:
+          rate: rate(30 minutes)
+          enabled: true
+
+resources:
+  Resources:
+    MyDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: MyCronJobTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+```
